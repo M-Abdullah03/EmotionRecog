@@ -4,15 +4,13 @@ from keras.api.models import load_model
 from PIL import Image
 import io
 import numpy as np
+from backend.preproc import preprocess_image
+import uvicorn
 
 app = FastAPI()
 
 # get model from .h5 file
-model = load_model('model.h5')
-
-def preprocess(data):
-    # preprocess data
-    return data
+# model = load_model('model.h5')
 
 @app.get("/")
 def read_root():
@@ -21,12 +19,22 @@ def read_root():
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     try:
-        # Read image file
-        image = Image.open(io.BytesIO(await file.read()))
-        image = np.array(image)
+        file_bytes = await file.read()
+        preprocessed_image = preprocess_image(io.BytesIO(file_bytes))
         
-            # prediction = your_model.predict(image)
-
-        return JSONResponse(content={"filename": file.filename, "prediction": "placeholder"})
+        if preprocessed_image is None:
+            return JSONResponse(content={"error": "The image does not contain a single face.", "status": "failure"}, status_code=400)
+        
+        # Reshape the image
+        image = np.expand_dims(image, axis=0)
+        
+        # Predict the emotion of the image
+        # emotion = model.predict_classes(image)[0]
+    
+        return JSONResponse(content={"filename": file.filename, "prediction": "emotion", "status": "success"}, status_code=200)
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=400)
+    
+# Run the server
+if __name__ == "__main__":
+    uvicorn.run(app, host="localhost", port=8000)
