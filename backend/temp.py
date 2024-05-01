@@ -14,7 +14,7 @@ from keras.api.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Batc
 from keras.api.models import Sequential
 from keras.api.callbacks import EarlyStopping
 from keras.src.legacy.preprocessing.image import ImageDataGenerator
-import pandas as pd
+import pickle
 from pathlib import Path
 import warnings
 
@@ -36,15 +36,15 @@ def preprocess_image(file_path):
     faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
     # If only single face is not detected, return None
-    if len(faces) != 1:
-        return None
+    # if len(faces) != 1:
+    #     return None
     
     normalized_image = cv2.normalize(image, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
     resized_image = cv2.resize(normalized_image, INPUT_SHAPE[:2])
     reshaped_image = np.reshape(resized_image, INPUT_SHAPE)
     return reshaped_image
 
-def load_data(base_dir):
+def load_data(base_dir, le=None):
     # Create a list of directories for each emotion
     emotion_dirs = [os.path.join(base_dir, emotion) for emotion in os.listdir(base_dir)]
 
@@ -70,10 +70,12 @@ def load_data(base_dir):
     y = np.array(y)
 
     # Encode the labels to integers
-    le = LabelEncoder()
+    if le is None:
+        le = LabelEncoder()
+
     y = le.fit_transform(y)
 
-    return X, y
+    return X, y, le
 
 
 # Set the base directory for the dataset
@@ -81,10 +83,14 @@ train_base_dir = 'archive/train'
 test_base_dir = 'archive/test'
 
 # Load the dataset
-X_train, y_train = load_data(train_base_dir)
+X_train, y_train, le = load_data(train_base_dir)
+
+# Save the LabelEncoder
+with open('label_encoder.pkl', 'wb') as f:
+    pickle.dump(le, f)
 
 # Load the test dataset
-X_test, y_test = load_data(test_base_dir)
+X_test, y_test, _ = load_data(test_base_dir, le)
 
 # Get the shape of the first image in the dataset
 image_height, image_width, num_channels = X_train[0].shape
@@ -176,9 +182,22 @@ best_model.fit(datagen.flow(X_train, y_train, batch_size=best_batch_size),
                callbacks=[early_stopping])
 
 # Get the predicted probabilities
-y_pred = model.predict(X_test)
+y_pred_prob = best_model.predict(X_test)
 
-print(y_pred)
+# Get the class with the highest probability
+y_pred = np.argmax(y_pred_prob, axis=1)
 
-# Save the model
-model.save('model.keras')
+# Transform the predicted labels back into their original form
+y_pred_labels = le.inverse_transform(y_pred)
+
+# Print the predicted probabilities for each class
+for i in range(len(y_pred_prob)):
+    print(f'Predicted probabilities: {y_pred_prob[i]}')
+    print(f'Predicted class: {y_pred_labels[i]}')
+    print('Class probabilities:')
+    for j in range(len(y_pred_prob[i])):
+        print(f'{le.inverse_transform([j])[0]}: {y_pred_prob[i][j]}')
+
+# Save the model using the pickle library
+with open('model.pkl', 'wb') as f:
+    pickle.dump(model, f)
