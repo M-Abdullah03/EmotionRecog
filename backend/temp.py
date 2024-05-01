@@ -50,7 +50,6 @@ def load_data(base_dir):
 
     # Initialize dictionaries to hold the data and labels for each emotion
     data_dict = {}
-    labels_dict = {}
 
     # Loop over all directories
     for emotion_dir in emotion_dirs:
@@ -176,11 +175,10 @@ best_model.fit(datagen.flow(X_train, y_train, batch_size=best_batch_size),
                validation_data=(X_test, y_test),
                callbacks=[early_stopping])
 
-# Predictions on the test set
-y_pred_best = best_model.predict(X_test)
-
 # Get the predicted probabilities
-y_pred_prob_best = best_model.predict_proba(X_test)
+y_pred = model.predict(X_test)
+
+print(y_pred)
 
 # Save the model
-best_model.save('best_model.h5')
+model.save('model.keras')
