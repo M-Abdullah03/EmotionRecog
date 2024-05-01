@@ -21,9 +21,6 @@ import warnings
 # Ignore UserWarnings from Keras
 warnings.filterwarnings('ignore', category=UserWarning, module='keras')
 
-# Load the Haar cascade xml file for face detection
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-
 # Define the input shape for the model
 INPUT_SHAPE = (48, 48, 1)
 NUM_CLASSES = 5
@@ -31,14 +28,6 @@ NUM_CLASSES = 5
 # Define a function to preprocess an image
 def preprocess_image(file_path):
     image = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
-
-    # Perform face detection
-    faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-
-    # If only single face is not detected, return None
-    # if len(faces) != 1:
-    #     return None
-    
     normalized_image = cv2.normalize(image, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
     resized_image = cv2.resize(normalized_image, INPUT_SHAPE[:2])
     reshaped_image = np.reshape(resized_image, INPUT_SHAPE)
@@ -57,7 +46,7 @@ def load_data(base_dir, le=None):
         emotion_files = [str(file) for file in Path(emotion_dir).rglob('*')]
         
         # Preprocess the images and get the labels for each emotion in the same loop
-        data_dict[emotion] = [preprocess_image(file) for file in emotion_files if preprocess_image(file) is not None]
+        data_dict[emotion] = [preprocess_image(file) for file in emotion_files]
 
     X = []
     y = []
@@ -76,7 +65,6 @@ def load_data(base_dir, le=None):
     y = le.fit_transform(y)
 
     return X, y, le
-
 
 # Set the base directory for the dataset
 train_base_dir = 'archive/train'
