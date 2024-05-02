@@ -2,22 +2,19 @@ import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Image, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Card, Icon, Text } from 'react-native-elements';
-import { BlurView } from 'expo-blur';
 import * as Font from 'expo-font';
 import { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
-
-
 import AppLoading from 'expo-app-loading';
 import Statistics from './components/Statistics';
+import TabNavigator from './components/TabNavigator';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
 
 export default function App() {
 
   const [image, setImage] = useState(null);
-  const [fontLoaded, setFontLoaded] = useState(false);
   const [appIsReady, setAppIsReady] = useState(false);
   const percentages = [0.5, 0.2, 0.1, 0.1, 0.1]; // Replace with your actual percentages
   useEffect(() => {
@@ -49,31 +46,58 @@ export default function App() {
     return null;
   }
 
+  const pickImage = async () => {
+    Alert.alert(
+      "Choose an image",
+      "Do you want to take a photo or choose from your gallery?",
+      [
+        {
+          text: "Take a photo",
+          onPress: async () => {
+            const { status } = await ImagePicker.requestCameraPermissionsAsync();
+            if (status !== 'granted') {
+              Alert.alert('Sorry, we need camera permissions to make this work!');
+              return;
+            }
 
-  async function loadFonts() {
-    await Font.loadAsync({
-      'LatoMedium': require('./assets/fonts/Lato-Medium.ttf'), // Replace with the path to your font file
-    });
-    await SplashScreen.hideAsync();
-  }
-  const pickImageFromGallery = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Sorry, we need camera roll permissions to make this work!');
-      return;
-    }
+            const result = await ImagePicker.launchCameraAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.All,
+              allowsEditing: true,
+              aspect: [4, 3],
+              quality: 1,
+            });
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+            if (!result.cancelled) {
+              setImage(result.uri);
+            }
+          },
+        },
+        {
+          text: "Choose from gallery",
+          onPress: async () => {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+              Alert.alert('Sorry, we need gallery permissions to make this work!');
+              return;
+            }
 
-    if (!result.cancelled) {
-      setImage(result.uri);
-    }
+            const result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.All,
+              allowsEditing: true,
+              aspect: [4, 3],
+              quality: 1,
+            });
+
+            if (!result.cancelled) {
+              setImage(result.uri);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
+
 
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -94,41 +118,41 @@ export default function App() {
     }
   };
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require('./assets/favicon.png')} style={styles.logo} />
-        <Text style={styles.headerText}>Emotion Recognition</Text>
-      </View>
-      <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
-        <Text style={styles.statHeading}> Choose an image</Text>
-        <Card containerStyle={styles.cardContainer}>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={takePhoto}>
-              <View style={styles.buttonContent}>
-                <Icon name="camera" size={50} style={styles.icon} />
-                {/* <Text style={styles.buttonText}>Take a photo</Text> */}
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={pickImageFromGallery}>
-              <View style={styles.buttonContent}>
-                <Icon name="image" size={50} style={styles.icon} />
-                {/* <Text style={styles.buttonText}>Choose from gallery</Text> */}
-              </View>
-            </TouchableOpacity>
-
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Image source={require('./assets/favicon.png')} style={styles.logo} />
+            <Text style={styles.headerText}>Emotion Recognition</Text>
           </View>
-          <TouchableOpacity style={styles.uploadButton} onPress={pickImageFromGallery}>
-            <View style={styles.buttonContent}>
-              <Icon name="upload" size={50} style={styles.icon} />
-              {/* <Text style={styles.buttonText}>Upload</Text> */}
+          {/* <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
+          <Text style={styles.statHeading}> Choose an image</Text>
+          <Card containerStyle={styles.cardContainer}>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={pickImage}>
+                <View style={styles.buttonContent}>
+                  <Icon name="camera" size={50} style={styles.icon} />
+                </View>
+              </TouchableOpacity>
+
             </View>
-          </TouchableOpacity>
-        </Card>
-        <Text style={styles.statHeading}> Statistics</Text>
-        <Statistics percentages={percentages} />
-      </ScrollView>
-      <StatusBar style="light" />
-    </View>
+            <TouchableOpacity style={styles.uploadButton} >
+              <View style={styles.buttonContent}>
+                <Icon name="upload" size={50} style={styles.icon} />
+                <Text style={styles.buttonText}>Upload</Text>
+              </View>
+            </TouchableOpacity>
+          </Card>
+          <Text style={styles.statHeading}> Statistics</Text>
+          <Statistics percentages={percentages} />
+        </ScrollView> */}
+          <StatusBar style="light" />
+        </View>
+        <TabNavigator />
+
+
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 const styles = StyleSheet.create({
