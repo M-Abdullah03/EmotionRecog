@@ -69,4 +69,4 @@ async def predict(file: UploadFile = File(...)):
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=400)
     
-handler = Mangum(app)
+# handler = Mangum(app)
