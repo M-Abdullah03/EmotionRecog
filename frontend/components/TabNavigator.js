@@ -2,14 +2,31 @@ import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { Text } from 'react-native';
+// import RadialMenu from 'react-native-radial-menu';
+// import PieMenu, {Slice as PieSlice} from 'react-pie-menu';
+import ActionButton from 'react-native-circular-action-menu';
+import Camera from './Camera';
+import { LogBox } from 'react-native';
+import AboutScreen from '../screens/AboutScreen';
+import { useNavigation } from '@react-navigation/native';
+
+LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
+
 // import { AboutScreen, CameraScreen, HistoryScreen } from './screens'; // Import your screen components
-function AboutScreen() {
-    return (
-        <View>
-            <Text>About</Text>
-        </View>
-    );
-}
+import { createStackNavigator } from '@react-navigation/stack';
+import Statistics from './Statistics';
+
+// Create a new StackNavigator
+const CameraStack = createStackNavigator();
+
+// Define the StackNavigator
+const CameraStackNavigator = () => (
+    <CameraStack.Navigator>
+      <Stack.Screen name="TabNavigator" component={TabNavigator} />
+        <CameraStack.Screen name="Statistics" component={Statistics} />
+    </CameraStack.Navigator>
+);
 
 function CameraScreen() {
     return (
@@ -22,14 +39,16 @@ function CameraScreen() {
 function HistoryScreen() {
     return (
         <View>
-            <Text>History</Text>
+            <Text>History fdgsdgdfsgdsdsfgfgsdf</Text>
         </View>
     );
 }
 const Tab = createBottomTabNavigator();
 
-export default function App() {
+export default function TabNavigator( ) {
     return (
+        // <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'center', backgroundColor: 'transparent', paddingBottom: 70 }}>
+        // <View style={{ width: '80%', backgroundColor: 'transparent' }}>
         <Tab.Navigator
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
@@ -43,30 +62,47 @@ export default function App() {
                         iconName = focused ? 'time' : 'time-outline';
                     }
 
-                    // You can return any component that you like here!
-                    return <Icon name={iconName} size={size} color={color} />;
+                    return <Icon name={iconName} size={30} color={color} />;
                 },
+                tabBarActiveTintColor: '#497DB1',
+                tabBarInactiveTintColor: 'black',
+                tabBarStyle: {
+                    backgroundColor: 'white', // This makes the tab bar transparent
+                    borderRadius: 25,
+                    elevation: 10,
+                    zIndex: 10,
+                    position: 'absolute',
+                    left: '10%',
+                    right: '10%',
+                    bottom: 30,
+                },
+                sceneContainerStyle: {
+                    backgroundColor: 'transparent',
+                },
+                tabBarLabel: () => null,
+                headerShown: false,
             })}
-            tabBarOptions={{
-                activeTintColor: 'tomato',
-                inactiveTintColor: 'gray',
-            }}
         >
             <Tab.Screen name="About" component={AboutScreen} />
+            <Tab.Screen name="History" component={HistoryScreen} />
             <Tab.Screen
                 name="Camera"
-                component={CameraScreen}
+                component={CameraStackNavigator}
                 options={{
-                    tabBarButton: (props) => (
-                        <View style={{ position: 'absolute', bottom: 20, }}>
-                            <TouchableOpacity {...props} style={{ top: -30, justifyContent: 'center', alignItems: 'center' }}>
-                                <Icon name="camera" size={60} color="#000" style={{ backgroundColor: '#fff', borderRadius: 30 }} />
-                            </TouchableOpacity>
-                        </View>
-                    ),
+                    tabBarButton: (props) => {
+                        return <Camera {...props} />;
+                    },
                 }}
             />
-            <Tab.Screen name="History" component={HistoryScreen} />
+            <Tab.Screen
+                name="Statistics"
+                component={Statistics}
+                options={{ tabBarButton: () => null }}
+
+
+            />
         </Tab.Navigator>
+        // </View>
+        // </View>
     );
 }

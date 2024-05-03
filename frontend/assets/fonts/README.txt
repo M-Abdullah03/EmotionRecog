@@ -1,72 +1,81 @@
+Raleway Variable Font
+=====================
 
-Lato font family (Desktop version)
+This download contains Raleway as both variable fonts and static fonts.
 
-==================================
+Raleway is a variable font with this axis:
+  wght
 
-Version 2.015; Latin+Cyrillic+Greek+IPA opensource
+This means all the styles are contained in these files:
+  Raleway-VariableFont_wght.ttf
+  Raleway-Italic-VariableFont_wght.ttf
 
-Created by: tyPoland Lukasz Dziedzic
-Creation year: 2015
+If your app fully supports variable fonts, you can now pick intermediate styles
+that aren’t available as static fonts. Not all apps support variable fonts, and
+in those cases you can use the static font files for Raleway:
+  static/Raleway-Thin.ttf
+  static/Raleway-ExtraLight.ttf
+  static/Raleway-Light.ttf
+  static/Raleway-Regular.ttf
+  static/Raleway-Medium.ttf
+  static/Raleway-SemiBold.ttf
+  static/Raleway-Bold.ttf
+  static/Raleway-ExtraBold.ttf
+  static/Raleway-Black.ttf
+  static/Raleway-ThinItalic.ttf
+  static/Raleway-ExtraLightItalic.ttf
+  static/Raleway-LightItalic.ttf
+  static/Raleway-Italic.ttf
+  static/Raleway-MediumItalic.ttf
+  static/Raleway-SemiBoldItalic.ttf
+  static/Raleway-BoldItalic.ttf
+  static/Raleway-ExtraBoldItalic.ttf
+  static/Raleway-BlackItalic.ttf
 
-Copyright (c) 2010-2015 by tyPoland Lukasz Dziedzic with Reserved Font Name "Lato". Licensed under the SIL Open Font License, Version 1.1.
+Get started
+-----------
 
-Lato is a trademark of tyPoland Lukasz Dziedzic.
+1. Install the font files you want to use
 
-Source URL: http://www.latofonts.com/
-License URL: http://scripts.sil.org/OFL
+2. Use your app's font picker to view the font family and all the
+available styles
 
-================
+Learn more about variable fonts
+-------------------------------
 
-Lato is a sanserif typeface family designed in the Summer 2010 and extended in the Summer 2013 by Warsaw-based designer Lukasz Dziedzic ("Lato" means "Summer" in Polish). It tries to carefully balance some potentially conflicting priorities: it should seem quite "transparent" when used in body text but would display some original traits when used in larger sizes. The classical proportions, particularly visible in the uppercase, give the letterforms familiar harmony and elegance. At the same time, its sleek sanserif look makes evident the fact that Lato was designed in the 2010s, even though it does not follow any current trend. The semi-rounded details of the letters give Lato a feeling of warmth, while the strong structure provides stability and seriousness. In 2013-2014, the family was greatly extended (with the help of Adam Twardoch and Botio Nikoltchev) to cover 3000+ glyphs over nine weights with italics. It now supports 100+ Latin-based languages, 50+ Cyrillic-based languages as well as Greek and IPA phonetics. The Lato fonts are available free of charge under the SIL Open Font License from http://www.latofonts.com/
+  https://developers.google.com/web/fundamentals/design-and-ux/typography/variable-fonts
+  https://variablefonts.typenetwork.com
+  https://medium.com/variable-fonts
 
-================
+In desktop apps
 
-CONTENTS: 
+  https://theblog.adobe.com/can-variable-fonts-illustrator-cc
+  https://helpx.adobe.com/nz/photoshop/using/fonts.html#variable_fonts
 
-This folder contains 18 font files in OpenType TT (.ttf) format. You can install these fonts on your computer and use in any desktop applications (such as Word, InDesign, Illustrator, Photoshop, Keynote or Pages). 
+Online
 
-================
+  https://developers.google.com/fonts/docs/getting_started
+  https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Fonts/Variable_Fonts_Guide
+  https://developer.microsoft.com/en-us/microsoft-edge/testdrive/demos/variable-fonts
 
-REVISION LOG:
+Installing fonts
 
-# Version 2.015 (2015-08-06)
-Initial implementation of mark positioning (should work for most glyphs)
-Autohinted using ttfautohint 1.3.
+  MacOS: https://support.apple.com/en-us/HT201749
+  Linux: https://www.google.com/search?q=how+to+install+a+font+on+gnu%2Blinux
+  Windows: https://support.microsoft.com/en-us/help/314960/how-to-install-or-remove-a-font-in-windows
 
-# Version 2.010 (2014-09-01)
-Improved some contour bugs and diacritics positioning. 
-Improved outline quality.
-Revised OTL features so that they work in browsers (ot-sanitise).
-Autohinted using ttfautohint 1.1.
-Interpolated the Medium weight differently so it provides more visual difference from Regular.
+Android Apps
 
-# Version 2.007 (2014-02-27)
-Greatly expanded character set, revised metrics, four additional weights.
+  https://developers.google.com/fonts/docs/android
+  https://developer.android.com/guide/topics/ui/look-and-feel/downloadable-fonts
 
-# Version 1.104 (2011-11-08)
-Merged the distribution again
-Autohinted with updated ttfautohint 0.4 (which no longer causes Adobe and iOS problems) 
-except the Hai and Lig weights which are hinted in FLS 5.1.
+License
+-------
+Please read the full license text (OFL.txt) to understand the permissions,
+restrictions and requirements for usage, redistribution, and modification.
 
-# Version 1.102 (2011-10-28)
-Added OpenType Layout features
-Ssplit between desktop and web versions
-Desktop version: all weights autohinted with FontLab Studio
-Web version autohinted with ttfautohint 0.4 except the Hai and Lig weights
+You can use them in your products & projects – print or digital,
+commercial or otherwise.
 
-# Version 1.101 (2011-09-30)
-Fixed OS/2 table Unicode and codepage entries
-
-# Version 1.100 (2011-09-12)
-Added Polish diacritics to the character set
-Weights Hai and Lig autohinted with FontLab Studio
-Other weights autohinted with ttfautohint 0.3
-
-# Version 1.011 (2010-12-29)
-Added the soft hyphen glyph
-
-# Version 1.010 (2010-12-13)
-Initial version released under SIL Open Font License
-Western character set
-
-================
+This isn't legal advice, please consider consulting a lawyer and see the full
+license for all details.

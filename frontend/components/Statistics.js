@@ -13,13 +13,17 @@ import sadIcon from '../assets/icons/sad.png';
 import angryIcon from '../assets/icons/angry.png';
 import surpriseIcon from '../assets/icons/surprised.png';
 import neutralIcon from '../assets/icons/neutral.png';
+import TabNavigator from './TabNavigator';
+import { ScrollView } from 'react-native';
 
 
-export default function Statistics({ percentages }) {
-    const emotions = ['Happy', 'Sad', 'Angry', 'Surprise', 'Neutral'];
-    const icons = [happyIcon, sadIcon, angryIcon, surpriseIcon, neutralIcon];
-    const iconBorderColors = ['#A1DE3A', '#fe7c1c', '#FF3814', '#22B527', '#FED41C'];
+export default function Statistics({ route }) {
+    const emotions = ['Surprised', 'Happy', 'Neutral', 'Sad', 'Angry'];
+    const icons = [surpriseIcon, happyIcon, neutralIcon, sadIcon, angryIcon];
+    const iconBorderColors = ['#22B527', '#A1DE3A', '#FED41C', '#fe7c1c', '#FF3814'];
     const [appIsReady, setAppIsReady] = useState(false);
+    const [imageData, setImageData] = useState(null);
+
     useEffect(() => {
         async function prepare() {
             try {
@@ -27,6 +31,13 @@ export default function Statistics({ percentages }) {
                 await SplashScreen.preventAutoHideAsync();
                 // Preload fonts
                 await loadFonts();
+                // Parse route params
+                const { filename, date, predicted_class, class_probabilities } = route.params;
+                console.log(route.params);
+                const image = `${filename}`;
+                const emotion = predicted_class[0].toUpperCase() + predicted_class.slice(1);
+                const percentages = Object.values(class_probabilities).map(prob => prob * 100);
+                setImageData({ image, date, emotion, percentages });
             } catch (e) {
                 console.warn(e);
             } finally {
@@ -37,29 +48,43 @@ export default function Statistics({ percentages }) {
 
         async function loadFonts() {
             await Font.loadAsync({
-                'LatoMedium': require('../assets/fonts/Lato-Medium.ttf'), // Replace with the path to your font file
+                'RalewayMedium': require('../assets/fonts/Raleway.ttf'), // Replace with the path to your font file
             });
             await SplashScreen.hideAsync();
         }
 
         prepare();
     }, []);
+
+    if (!appIsReady) {
+        return null;
+    }
+
+
     return (
-        <View style={styles.statsContainer}>
+        <ScrollView contentContainerStyle={styles.statsContainer}>
+            <Card containerStyle={styles.topCard}>
+                <View style={styles.topCardContent}>
+                    <View style={styles.imageView}>
+                        <Image source={{ uri: imageData.image }} style={styles.image} resizeMode='contain' />
+                    </View>
+                    <View>
+                        <Text style={styles.dateText}>{imageData.date}</Text>
+                        <Text style={styles.emotionText}>State: {imageData.emotion}</Text>
+                    </View>
+                </View>
+            </Card>
             {emotions.map((emotion, index) => (
                 <Card key={index} containerStyle={{ borderColor: iconBorderColors[index], ...styles.card }}>
-
                     <View style={{ ...styles.cardContent }}>
-                        {/* <Icon name={icons[index]} type='material-community' size={48} /> */}
                         <Image source={icons[index]} style={styles.logo} />
-
                         <Text style={styles.text}>{emotion}</Text>
                         <AnimatedCircularProgress
-                            size={70} // can be changed
-                            width={5} // can be changed
-                            fill={percentages[index] * 100} // percentage
-                            tintColor={iconBorderColors[index]} // can be changed
-                            backgroundColor="#ededed" // can be changed
+                            size={50}
+                            width={5}
+                            fill={imageData.percentages[index]}
+                            tintColor={iconBorderColors[index]}
+                            backgroundColor="#ededed"
                         >
                             {(fill) => (
                                 <Text style={styles.percentageText}>
@@ -69,9 +94,8 @@ export default function Statistics({ percentages }) {
                         </AnimatedCircularProgress>
                     </View>
                 </Card>
-            ))
-            }
-        </View >
+            ))}
+        </ScrollView>
     );
 }
 
@@ -81,7 +105,7 @@ const styles = StyleSheet.create({
         color: '#2854C3',
         fontSize: 24,
         fontWeight: 'bold',
-        fontFamily: 'LatoMedium',
+        fontFamily: 'RalewayMedium',
         textAlign: 'left',
     },
     buttonContent: {
@@ -99,32 +123,34 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     statsContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
         justifyContent: 'center',
         width: '100%',
+        backgroundColor: 'white',
+        // flex: 1,
     },
     card: {
-        backgroundColor: '#fff',
-        margin: 10,
-        padding: 5,
-        alignItems: 'center',
-        justifyContent: 'center',
         display: 'flex',
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        height: 70,
+        justifyContent: 'center',
         borderRadius: 50,
         borderWidth: 1.5,
+        margin: 12,
+        marginLeft: 20,
+        // paddingBottom: 20,
         width: '90%',
-        // borderColor: '#2854C3',
         flexDirection: 'row', // Add this
     },
     emoji: {
         fontSize: 30,
     },
     text: {
-        fontFamily: 'LatoMedium',
-        fontSize: 20,
+        fontFamily: 'RalewayMedium',
+        fontSize: 18,
         fontWeight: 'bold',
         textAlign: 'center',
+        color: '#000',
         // flex: 1,
     },
     cardContent: {
@@ -137,10 +163,39 @@ const styles = StyleSheet.create({
 
     },
     percentageText: {
-        fontFamily: 'LatoMedium',
+        fontFamily: 'RalewayMedium',
         fontSize: 15,
         fontWeight: 'bold',
 
         // flex: 1,
+    },
+    topCard: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        elevation: 15,
+        borderRadius: 10,
+    },
+    topCardContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    dateText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    emotionText: {
+        fontSize: 14,
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 5,
+    },
+    imageView: {
+        marginRight: 10,
+        width: 100,
+        height: 100,
     },
 });

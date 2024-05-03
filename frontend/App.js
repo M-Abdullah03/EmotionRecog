@@ -9,13 +9,19 @@ import * as SplashScreen from 'expo-splash-screen';
 import AppLoading from 'expo-app-loading';
 import Statistics from './components/Statistics';
 import TabNavigator from './components/TabNavigator';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+// import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
+import ImageContext from './contexts/ImageContext';
+import { LinearGradient } from 'expo-linear-gradient';
+import { createStackNavigator } from '@react-navigation/stack';
 
+
+const Stack = createStackNavigator();
 export default function App() {
 
-  const [image, setImage] = useState(null);
   const [appIsReady, setAppIsReady] = useState(false);
+  const [imageUri, setImageUri] = useState(null);
+
   const percentages = [0.5, 0.2, 0.1, 0.1, 0.1]; // Replace with your actual percentages
   useEffect(() => {
     async function prepare() {
@@ -34,7 +40,7 @@ export default function App() {
 
     async function loadFonts() {
       await Font.loadAsync({
-        'LatoMedium': require('./assets/fonts/Lato-Medium.ttf'), // Replace with the path to your font file
+        'RalewayMedium': require('./assets/fonts/Raleway.ttf'), // Replace with the path to your font file
       });
       await SplashScreen.hideAsync();
     }
@@ -46,85 +52,21 @@ export default function App() {
     return null;
   }
 
-  const pickImage = async () => {
-    Alert.alert(
-      "Choose an image",
-      "Do you want to take a photo or choose from your gallery?",
-      [
-        {
-          text: "Take a photo",
-          onPress: async () => {
-            const { status } = await ImagePicker.requestCameraPermissionsAsync();
-            if (status !== 'granted') {
-              Alert.alert('Sorry, we need camera permissions to make this work!');
-              return;
-            }
-
-            const result = await ImagePicker.launchCameraAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.All,
-              allowsEditing: true,
-              aspect: [4, 3],
-              quality: 1,
-            });
-
-            if (!result.cancelled) {
-              setImage(result.uri);
-            }
-          },
-        },
-        {
-          text: "Choose from gallery",
-          onPress: async () => {
-            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            if (status !== 'granted') {
-              Alert.alert('Sorry, we need gallery permissions to make this work!');
-              return;
-            }
-
-            const result = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.All,
-              allowsEditing: true,
-              aspect: [4, 3],
-              quality: 1,
-            });
-
-            if (!result.cancelled) {
-              setImage(result.uri);
-            }
-          },
-        },
-      ],
-      { cancelable: true }
-    );
-  };
-
-
-  const takePhoto = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Sorry, we need camera permissions to make this work!');
-      return;
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.cancelled) {
-      setImage(result.uri);
-    }
-  };
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
+    // <SafeAreaProvider>
+    <ImageContext.Provider value={{ imageUri, setImageUri }}>
+
+      <NavigationContainer theme={{ colors: { background: 'transparent' } }}>
+
         <View style={styles.container}>
-          <View style={styles.header}>
-            <Image source={require('./assets/favicon.png')} style={styles.logo} />
-            <Text style={styles.headerText}>Emotion Recognition</Text>
-          </View>
+          <LinearGradient colors={['#497DB1', '#3DC7BC']} style={{ width: '100%', alignItems: 'center' }}>
+            <View style={styles.header}>
+              <Image source={require('./assets/favicon.png')} style={styles.logo} />
+              <Text style={styles.headerText}>EmoCheck</Text>
+            </View>
+          </LinearGradient>
+          {/* <Image source={{ uri: imageUri }} style={{ width: '100%', height: '100%' }} /> */}
+
           {/* <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
           <Text style={styles.statHeading}> Choose an image</Text>
           <Card containerStyle={styles.cardContainer}>
@@ -146,13 +88,14 @@ export default function App() {
           <Text style={styles.statHeading}> Statistics</Text>
           <Statistics percentages={percentages} />
         </ScrollView> */}
-          <StatusBar style="light" />
+          <TabNavigator />
+          <StatusBar style="dark" />
+
         </View>
-        <TabNavigator />
 
 
       </NavigationContainer>
-    </SafeAreaProvider>
+    </ImageContext.Provider>
   );
 }
 const styles = StyleSheet.create({
@@ -160,28 +103,32 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
+
+    // alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 50,
-    backgroundColor: '#2854C3',
+    // marginBottom: 50,
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
     width: '100%',
     padding: 20,
-    paddingTop: 50,
+    paddingTop:40,
   },
   logo: {
-    width: 50,
-    height: 50,
+    position: 'absolute',
+    top:25,
+    left: 1,
+    width: 80,
+    height: 60,
     marginRight: 10,
   },
   headerText: {
     color: '#fff',
     fontSize: 24,
-    fontFamily: 'LatoMedium',
-    fontWeight: 'bold',
-    textAlign: 'left',
+    fontFamily: 'RalewayMedium',
+    fontWeight: 'bold'
   },
   buttonContainer: {
     width: '100%',
@@ -222,7 +169,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: '#2854C4',
     fontSize: 20,
-    fontFamily: 'LatoMedium',
+    fontFamily: 'RalewayMedium',
     fontWeight: 'bold',
   },
   cardContainer: {
@@ -239,7 +186,7 @@ const styles = StyleSheet.create({
     color: '#2854C3',
     fontSize: 24,
     fontWeight: 'bold',
-    fontFamily: 'LatoMedium',
+    fontFamily: 'RalewayMedium',
     textAlign: 'left',
   },
   buttonContent: {
@@ -252,7 +199,7 @@ const styles = StyleSheet.create({
     color: '#2854C3'
   },
   statHeading: {
-    fontFamily: 'LatoMedium',
+    fontFamily: 'RalewayMedium',
     fontWeight: 'bold',
     fontSize: 30,
     color: '#2854C3',
