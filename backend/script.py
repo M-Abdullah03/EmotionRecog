@@ -13,7 +13,7 @@ from preproc import preprocess_image
 import uvicorn
 import warnings
 import pickle
-import datetime
+from datetime import datetime
 
 warnings.filterwarnings("ignore", category=UserWarning, module="keras")
 
@@ -36,12 +36,13 @@ async def predict(file: UploadFile = File(...)):
         file_bytes = await file.read()
         preprocessed_image = preprocess_image(file_bytes)
         
-        if preprocessed_image == -1:
-            return JSONResponse(content={"error": "The image does not contain a single face.", "status": "failure"}, status_code=404)
-        
-        if preprocessed_image == -2:
-            return JSONResponse(content={"error": "The image contains more than one face.", "status": "failure"}, status_code=405)
-        
+        if preprocessed_image is type(int):
+            if preprocessed_image == -1:
+                return JSONResponse(content={"error": "The image does not contain a single face.", "status": "failure"}, status_code=404)
+            
+            if preprocessed_image == -2:
+                return JSONResponse(content={"error": "The image contains more than one face.", "status": "failure"}, status_code=405)
+            
         # Reshape the image
         image = np.expand_dims(preprocessed_image, axis=0)
         
