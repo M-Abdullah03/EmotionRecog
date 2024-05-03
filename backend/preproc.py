@@ -31,8 +31,11 @@ def preprocess_image(file_bytes):
     faces = detector.detect_faces(image)
 
     # If only single face is not detected, return None
-    if len(faces) != 1:
-        return None
+    if len(faces) == 0:
+        return -1
+    
+    if len(faces) > 1:
+        return -2
     
     # extract face 
     x, y, width, height = faces[0]['box']
