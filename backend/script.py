@@ -60,8 +60,8 @@ async def predict(file: UploadFile = File(...)):
         for j in range(len(y_pred_prob[0])):
             class_probabilities[encoder.inverse_transform([j])[0]] = y_pred_prob[0][j]
             
-        current_date = datetime.now().strftime("%Y-%m-%d %H:%M")
-        
+        current_date = datetime.now().strftime("%A, %d-%m %H:%M")
+                
         return JSONResponse(content={"filename": file.filename, "date": current_date, "predicted_class": y_pred_label, "class_probabilities": class_probabilities, "status": "success"}, status_code=200)
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=400)
