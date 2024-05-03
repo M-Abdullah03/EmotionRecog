@@ -16,7 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const Camera = ({ props }) => {
     const { setImageUri } = useContext(ImageContext);
-    const [modalVisible, setModalVisible] = useState(true);
+    const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const navigation = useNavigation();
 
@@ -66,31 +66,78 @@ const Camera = ({ props }) => {
         handleImageSelection(result);
     };
 
-    const onUpload = () => {
+    const onUpload = async () => {
         setModalVisible(false);
-        //navigate to the next screen
-        console.log('Navigating to the next screen');
-        const data = {
-            "filename": selectedImage,
-            "date": Date.now(),
-            "predicted_class": "happy",
-            "class_probabilities":
-            {
-                "surprise": 0.019952958449721336,
-                "happy": 0.6263152360916138,
-                "neutral": 0.11404421925544739,
-                "sad": 0.1443880945444107,
-                "angry": 0.09529939293861389
-            },
-            "status": "success"
-        };
-        console.log(data);
 
-        console.log('Navigating to the next screen');
-        console.log({ ...data });
+        let data = new FormData();
+        data.append('file', {
+            uri: selectedImage,
+            type: 'image/jpeg', // or 'image/png' if your image is a png
+            name: 'test.jpg', // you can replace 'test' with the actual file name
+        });
 
-        navigation.navigate('Statistics', { ...data });
+        try {
+            let response = await fetch('http://10.0.2.2:8000/predict', {
+                method: 'POST',
+                body: data,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            let responseJson = await response.json();
+            console.log(responseJson);
+
+            if (response.ok) {
+                console.log('Navigating to the next screen');
+
+                // Create a new object with the class probabilities in the desired order
+                let orderedClassProbabilities = {
+                    "surprise": responseJson.class_probabilities.surprise,
+                    "happy": responseJson.class_probabilities.happy,
+                    "neutral": responseJson.class_probabilities.neutral,
+                    "sad": responseJson.class_probabilities.sad,
+                    "angry": responseJson.class_probabilities.angry
+                };
+
+                // Replace the class_probabilities in the response with the ordered object
+                responseJson.class_probabilities = orderedClassProbabilities;
+
+                navigation.navigate('Statistics', { ...responseJson });
+            } else {
+                console.log('Error:', responseJson.error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
+
+
+    // const onUpload = () => {
+    //     setModalVisible(false);
+    //     //navigate to the next screen
+    //     console.log('Navigating to the next screen');
+    //     const data = {
+    //         "filename": selectedImage,
+    //         "date": Date.now(),
+    //         "predicted_class": "happy",
+    //         "class_probabilities":
+    //         {
+    //             "surprise": 0.019952958449721336,
+    //             "happy": 0.6263152360916138,
+    //             "neutral": 0.11404421925544739,
+    //             "sad": 0.1443880945444107,
+    //             "angry": 0.09529939293861389
+    //         },
+    //         "status": "success"
+    //     };
+    //     console.log(data);
+
+    //     console.log('Navigating to the next screen');
+    //     console.log({ ...data });
+
+    //     navigation.navigate('Statistics', { ...data });
+    // };
 
     return (
 

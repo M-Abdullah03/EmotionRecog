@@ -61,8 +61,8 @@ export default function App() {
         <View style={styles.container}>
           <LinearGradient colors={['#497DB1', '#3DC7BC']} style={{ width: '100%', alignItems: 'center' }}>
             <View style={styles.header}>
-              <Image source={require('./assets/favicon.png')} style={styles.logo} />
-              <Text style={styles.headerText}>EmoCheck</Text>
+              <Image source={require('./assets/logo.png')} style={styles.logo} resizeMode='contain' />
+              {/* <Text style={styles.headerText}>EmoCheck</Text> */}
             </View>
           </LinearGradient>
           {/* <Image source={{ uri: imageUri }} style={{ width: '100%', height: '100%' }} /> */}
@@ -113,15 +113,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     justifyContent: 'center',
     width: '100%',
-    padding: 20,
-    paddingTop:40,
+    // padding: 20,
+    paddingTop: 30,
   },
   logo: {
-    position: 'absolute',
-    top:25,
-    left: 1,
-    width: 80,
-    height: 60,
+    // position: 'absolute',
+    // top:25,
+    // left: 1,
+    height: 70,
+    padding: 0,
+    margin: 0,
+    width: '90%',
+
     marginRight: 10,
   },
   headerText: {
