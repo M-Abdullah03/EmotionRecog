@@ -4,12 +4,6 @@
             "runtime": "python3.11"
         }
     },
-    "builds": [
-        {
-            "src": "deploy.py",
-            "use": "@vercel/python"
-        }
-    ],
     "routes": [
         {
             "src": "/(.*)",
