@@ -9,6 +9,7 @@ import ActionButton from 'react-native-circular-action-menu';
 import Camera from './Camera';
 import { LogBox } from 'react-native';
 import AboutScreen from '../screens/AboutScreen';
+import HistoryScreen from '../screens/HistoryScreen';
 import { useNavigation } from '@react-navigation/native';
 
 LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
@@ -32,14 +33,6 @@ function CameraScreen() {
     return (
         <View>
             <Text>Camera</Text>
-        </View>
-    );
-}
-
-function HistoryScreen() {
-    return (
-        <View>
-            <Text>History fdgsdgdfsgdsdsfgfgsdf</Text>
         </View>
     );
 }

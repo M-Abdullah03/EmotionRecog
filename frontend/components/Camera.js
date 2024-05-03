@@ -12,12 +12,13 @@ import { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PacmanIndicator } from 'react-native-indicators';
 const Camera = ({ props }) => {
     const { setImageUri } = useContext(ImageContext);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
 
     const handleImageSelection = (result) => {
@@ -102,6 +103,27 @@ const Camera = ({ props }) => {
 
                 // Replace the class_probabilities in the response with the ordered object
                 responseJson.class_probabilities = orderedClassProbabilities;
+                responseJson.filename = selectedImage;
+
+                try {
+                    let history = await AsyncStorage.getItem('history');
+                    if (history === null) {
+                        history = [];
+                    } else {
+                        history = JSON.parse(history);
+                    }
+
+                    history.push(responseJson);
+                    console.log('History:', history);
+                    console.log('Response:', responseJson);
+
+                    await AsyncStorage.setItem('history', JSON.stringify(history));
+                    console.log('Data saved to local storage');
+                } catch (error) {
+                    console.error('Error saving data to local storage:', error);
+                }
+
+
 
                 navigation.navigate('Statistics', { ...responseJson });
             } else {
@@ -111,33 +133,6 @@ const Camera = ({ props }) => {
             console.error('Error:', error);
         }
     };
-
-
-    // const onUpload = () => {
-    //     setModalVisible(false);
-    //     //navigate to the next screen
-    //     console.log('Navigating to the next screen');
-    //     const data = {
-    //         "filename": selectedImage,
-    //         "date": Date.now(),
-    //         "predicted_class": "happy",
-    //         "class_probabilities":
-    //         {
-    //             "surprise": 0.019952958449721336,
-    //             "happy": 0.6263152360916138,
-    //             "neutral": 0.11404421925544739,
-    //             "sad": 0.1443880945444107,
-    //             "angry": 0.09529939293861389
-    //         },
-    //         "status": "success"
-    //     };
-    //     console.log(data);
-
-    //     console.log('Navigating to the next screen');
-    //     console.log({ ...data });
-
-    //     navigation.navigate('Statistics', { ...data });
-    // };
 
     return (
 
@@ -189,14 +184,20 @@ const Camera = ({ props }) => {
                         <View style={styles.imageView}>
                             <Image source={{ uri: selectedImage }} resizeMode="contain" style={styles.imagePreview} />
                         </View>
-                        <TouchableOpacity style={styles.uploadBtn} onPress={onUpload}>
-                            <Text style={styles.uploadBtnText}>Upload</Text>
-                        </TouchableOpacity>
+                        {isLoading ? (
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <PacmanIndicator
+                                    color="#0000ff" />
+                            </View>
+                        ) : (
+                            <TouchableOpacity style={styles.uploadBtn} onPress={onUpload}>
+                                <Text style={styles.uploadBtnText}>Upload</Text>
+                            </TouchableOpacity>
+                        )}
                     </View>
                 </View>
             </Modal>
             <StatusBar backgroundColor={modalVisible ? 'rgba(0, 0, 0, 0.5)' : 'transparent'} />
-
         </>
     );
 };
