@@ -6,3 +6,4 @@ tensorflow
 Pillow
 matplotlib
 keras
+scikeras

@@ -1,0 +1,7 @@
+{
+    "functions": {
+        "deploy.py": {
+            "runtime": "python3.11"
+        }
+    }
+}
