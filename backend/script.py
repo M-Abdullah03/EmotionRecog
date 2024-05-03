@@ -35,8 +35,11 @@ async def predict(file: UploadFile = File(...)):
         file_bytes = await file.read()
         preprocessed_image = preprocess_image(file_bytes)
         
-        if preprocessed_image is None:
-            return JSONResponse(content={"error": "The image does not contain a single face.", "status": "failure"}, status_code=400)
+        if preprocessed_image == -1:
+            return JSONResponse(content={"error": "The image does not contain a single face.", "status": "failure"}, status_code=404)
+        
+        if preprocessed_image == -2:
+            return JSONResponse(content={"error": "The image contains more than one face.", "status": "failure"}, status_code=405)
         
         # Reshape the image
         image = np.expand_dims(preprocessed_image, axis=0)
