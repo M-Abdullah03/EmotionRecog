@@ -36,7 +36,7 @@ async def predict(file: UploadFile = File(...)):
         file_bytes = await file.read()
         preprocessed_image = preprocess_image(file_bytes)
         
-        if preprocessed_image is type(int):
+        if isinstance(preprocessed_image, int):    
             if preprocessed_image == -1:
                 return JSONResponse(content={"error": "The image does not contain a single face.", "status": "failure"}, status_code=404)
             
