@@ -15,6 +15,7 @@ import warnings
 import pickle
 from datetime import datetime
 
+
 warnings.filterwarnings("ignore", category=UserWarning, module="keras")
 
 
@@ -36,13 +37,13 @@ async def predict(file: UploadFile = File(...)):
         file_bytes = await file.read()
         preprocessed_image = preprocess_image(file_bytes)
 
-
         if preprocessed_image is type(int):
             if preprocessed_image == -1:
                 return JSONResponse(content={"error": "The image does not contain a single face.", "status": "failure"}, status_code=404)
 
             if preprocessed_image == -2:
                 return JSONResponse(content={"error": "The image contains more than one face.", "status": "failure"}, status_code=405)
+
         # Reshape the image
         image = np.expand_dims(preprocessed_image, axis=0)
 
@@ -67,6 +68,4 @@ async def predict(file: UploadFile = File(...)):
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=400)
 
-# Run the server
-if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+# handler = Mangum(app)

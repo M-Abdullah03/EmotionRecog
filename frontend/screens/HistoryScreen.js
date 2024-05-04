@@ -10,7 +10,7 @@ import neutralIcon from '../assets/icons/neutral.png';
 const HistoryScreen = () => {
     const [history, setHistory] = useState([]);
     const isFocused = useIsFocused();
-    const navigation= useNavigation();
+    const navigation = useNavigation();
     const icons = {
         'surprise': surpriseIcon,
         'happy': happyIcon,
@@ -49,7 +49,7 @@ const HistoryScreen = () => {
     const renderItem = ({ item }) => (
         <TouchableOpacity style={[styles.card, { flexDirection: 'column', justifyContent: 'space-between' }]} onPress={() => navigation.navigate('Statistics', item)}>
             <Image source={{ uri: item.filename }} style={styles.image} />
-            <View style={{ alignSelf: 'flex-end',elevation:25, position:'absolute', bottom:8,backgroundColor:'rgba(0,0,0,0.05)', borderRadius: 10, padding: 5 }}>
+            <View style={{ alignSelf: 'flex-end', elevation: 25, position: 'absolute', bottom: 8, backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: 10, padding: 5 }}>
                 <Image source={icons[item.predicted_class]} style={styles.emotion} />
             </View>
         </TouchableOpacity>
@@ -57,7 +57,12 @@ const HistoryScreen = () => {
 
     return (
         <View>
-            <Text onPress={clearStorage}>Clear Storage</Text>
+            <View style={styles.header}>
+                <Text style={styles.title}></Text>
+                <TouchableOpacity onPress={clearStorage} style={styles.clearButton}>
+                    <Text style={styles.clearButtonText}>Clear History</Text>
+                </TouchableOpacity>
+            </View>
             <FlatList
                 data={history}
                 renderItem={renderItem}
@@ -93,6 +98,26 @@ const styles = StyleSheet.create({
         height: 50,
         // elevation: 25,
 
+    },
+    container: {
+        flex: 1,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 10,
+    },
+    title: {
+        fontSize: 20,
+    },
+    clearButton: {
+        backgroundColor: '#f00',
+        padding: 10,
+        borderRadius: 5,
+    },
+    clearButtonText: {
+        color: '#fff',
+        fontSize: 16,
     },
 });
 

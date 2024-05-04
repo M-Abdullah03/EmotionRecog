@@ -4,7 +4,7 @@ import React from 'react';
 import ActionButton from 'react-native-circular-action-menu';
 import Icon from 'react-native-vector-icons/Ionicons'; // Replace with the actual icon library you're using
 import * as ImagePicker from 'expo-image-picker';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { useContext } from 'react';
 import ImageContext from '../contexts/ImageContext';
 import { Modal, View, TouchableOpacity, Image, Text, StatusBar } from 'react-native';
@@ -18,7 +18,7 @@ const Camera = ({ props }) => {
     const { setImageUri } = useContext(ImageContext);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const navigation = useNavigation();
 
     const handleImageSelection = (result) => {
@@ -68,8 +68,7 @@ const Camera = ({ props }) => {
     };
 
     const onUpload = async () => {
-        setModalVisible(false);
-
+        setIsLoading(true);
         let data = new FormData();
         data.append('file', {
             uri: selectedImage,
@@ -124,10 +123,24 @@ const Camera = ({ props }) => {
                 }
 
 
+                setModalVisible(false);
 
                 navigation.navigate('Statistics', { ...responseJson });
             } else {
+                setIsLoading(false);
                 console.log('Error:', responseJson.error);
+                Alert.alert(
+                    'Oops!',
+                    responseJson.error,
+                    [
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        }
+                    ],
+                    { cancelable: false }
+                );
             }
         } catch (error) {
             console.error('Error:', error);
@@ -137,6 +150,8 @@ const Camera = ({ props }) => {
     return (
 
         <>
+            <StatusBar backgroundColor={modalVisible ? 'rgba(0, 0, 0, 0.5)' : 'white'} />
+
             <ActionButton
                 buttonColor="#3DC7BC"
                 position="center"
@@ -187,7 +202,7 @@ const Camera = ({ props }) => {
                         {isLoading ? (
                             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                 <PacmanIndicator
-                                    color="#0000ff" />
+                                    color="#497DB1" />
                             </View>
                         ) : (
                             <TouchableOpacity style={styles.uploadBtn} onPress={onUpload}>
@@ -197,7 +212,6 @@ const Camera = ({ props }) => {
                     </View>
                 </View>
             </Modal>
-            <StatusBar backgroundColor={modalVisible ? 'rgba(0, 0, 0, 0.5)' : 'transparent'} />
         </>
     );
 };
@@ -205,6 +219,15 @@ const Camera = ({ props }) => {
 const screenHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
+    alertTitle: {
+        fontSize: 18,
+        color: 'red',
+        fontWeight: 'bold',
+    },
+    alertMessage: {
+        fontSize: 16,
+        color: 'black',
+    },
     centeredView: {
         flex: 1,
         justifyContent: "flex-end",

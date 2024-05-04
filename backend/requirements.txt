@@ -4,5 +4,5 @@ opencv-python
 mtcnn
 tensorflow
 Pillow
-matplotlib
 keras
+scikeras
