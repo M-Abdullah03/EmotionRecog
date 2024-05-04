@@ -1,19 +1,18 @@
 # ignore tensorflow warnings
+from datetime import datetime
+import pickle
+import warnings
+import uvicorn
+from preproc import preprocess_image
+import numpy as np
+import io
+from PIL import Image
+from keras.api.models import load_model
+from fastapi.responses import JSONResponse
+from fastapi import FastAPI, UploadFile, File
 import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
-from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import JSONResponse
-from keras.api.models import load_model
-from PIL import Image
-import io
-import numpy as np
-from preproc import preprocess_image
-import uvicorn
-import warnings
-import pickle
-from datetime import datetime
 
 
 warnings.filterwarnings("ignore", category=UserWarning, module="keras")
@@ -27,9 +26,11 @@ with open('./model.pkl', 'rb') as f:
 with open('./label_encoder.pkl', 'rb') as f:
     encoder = pickle.load(f)
 
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
@@ -37,7 +38,7 @@ async def predict(file: UploadFile = File(...)):
         file_bytes = await file.read()
         preprocessed_image = preprocess_image(file_bytes)
 
-        if preprocessed_image is type(int):
+        if isinstance(preprocessed_image, int):
             if preprocessed_image == -1:
                 return JSONResponse(content={"error": "The image does not contain a single face.", "status": "failure"}, status_code=404)
 
@@ -60,7 +61,8 @@ async def predict(file: UploadFile = File(...)):
         # Create a dictionary to hold the class probabilities
         class_probabilities = {}
         for j in range(len(y_pred_prob[0])):
-            class_probabilities[encoder.inverse_transform([j])[0]] = y_pred_prob[0][j]
+            class_probabilities[encoder.inverse_transform(
+                [j])[0]] = y_pred_prob[0][j]
 
         current_date = datetime.now().strftime("%A, %d-%m %H:%M")
 
