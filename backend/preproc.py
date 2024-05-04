@@ -59,7 +59,7 @@ from PIL import Image, ImageOps
 import numpy as np
 from mtcnn import MTCNN
 import io
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 # Load the MTCNN detector
 detector = MTCNN()
@@ -101,7 +101,7 @@ def preprocess_image(file_bytes):
     # Reshape the image
     reshaped_image = np.reshape(image, INPUT_SHAPE + (1,))
     #plot
-    plt.imshow(reshaped_image)
-    plt.show()
+    # plt.imshow(reshaped_image)
+    # plt.show()
 
     return reshaped_image
