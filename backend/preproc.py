@@ -1,5 +1,6 @@
 from mtcnn import MTCNN
 import numpy as np
+import matplotlib.pyplot as plt
 import cv2
 
 # # Load the Haar cascade xml file for face detection
@@ -45,8 +46,62 @@ def preprocess_image(file_bytes):
     resized_image = cv2.resize(normalized_image, INPUT_SHAPE[:2])
     reshaped_image = np.reshape(resized_image, INPUT_SHAPE)
 
+    # plot the image
+    plt.imshow(reshaped_image)
+    plt.show()
     return reshaped_image
 
 
-# file_bytes = open('./backend/happy-bg.jpg', 'rb').read()
+# # file_bytes = open('./backend/happy-bg.jpg', 'rb').read()
 # preprocess_image(file_bytes)
+
+# from PIL import Image, ImageOps
+# import numpy as np
+# from mtcnn import MTCNN
+# import io
+# import matplotlib.pyplot as plt
+
+# # Load the MTCNN detector
+# detector = MTCNN()
+# print("Loading MTCNN detector...")
+
+# # Define the input shape for the model
+# INPUT_SHAPE = (48, 48)
+
+# def preprocess_image(file_bytes):
+#     # Open the image file
+#     image = Image.open(io.BytesIO(file_bytes))
+
+#     # Convert the image to RGB
+#     image = image.convert('RGB')
+
+#     # Perform face detection
+#     faces = detector.detect_faces(np.array(image))
+
+#     # If only single face is not detected, return None
+#     if len(faces) == 0:
+#         return -1
+
+#     if len(faces) > 1:
+#         return -2
+
+#     # extract face
+#     x, y, width, height = faces[0]['box']
+#     face = image.crop((x, y, x + width, y + height))
+
+#     # Convert the image to grayscale
+#     image = face.convert('L')
+
+#     # Normalize the image
+#     image = ImageOps.autocontrast(image)
+
+#     # Resize the image
+#     image = image.resize(INPUT_SHAPE)
+
+#     # Reshape the image
+#     reshaped_image = np.reshape(image, INPUT_SHAPE + (1,))
+#     #plot
+#     plt.imshow(reshaped_image)
+#     plt.show()
+
+#     return reshaped_image
