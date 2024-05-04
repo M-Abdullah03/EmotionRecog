@@ -1,4 +1,3 @@
-from keras.api.models import load_model
 from mtcnn import MTCNN
 import numpy as np
 import cv2

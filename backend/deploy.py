@@ -2,12 +2,8 @@
 from datetime import datetime
 import pickle
 import warnings
-import uvicorn
 from preproc import preprocess_image
 import numpy as np
-import io
-from PIL import Image
-from keras.api.models import load_model
 from fastapi.responses import JSONResponse
 from fastapi import FastAPI, UploadFile, File
 import os
