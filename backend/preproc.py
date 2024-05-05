@@ -2,7 +2,7 @@ from mtcnn import MTCNN
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
-
+from faceorienter import FaceOrienter
 # # Load the Haar cascade xml file for face detection
 # face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
@@ -18,10 +18,13 @@ def preprocess_image(file_bytes):
 
     # Decode the image from the byte array in color
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    #Fix orientation
+    orienter = FaceOrienter(image)
+    image = orienter.fix_orientation()
 
     # plot the image
-    # plt.imshow(image)
-    # plt.show()
+    plt.imshow(image)
+    plt.show()
 
     # Convert the image from BGR to RGB
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -41,33 +44,11 @@ def preprocess_image(file_bytes):
     face = image[y:y+height, x:x+width]
 
     # # Convert the image to grayscale
-    # image = cv2.cvtColor(face, cv2.COLOR_RGB2GRAY)
-    # normalized_image = cv2.normalize(image, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
-    # resized_image = cv2.resize(normalized_image, INPUT_SHAPE[:2])
-    # reshaped_image = np.reshape(resized_image, INPUT_SHAPE)
-
-
-    # Get the landmarks
-    landmarks = faces[0]['keypoints']
-
-    # Calculate the angle between the two eyes
-    dY = landmarks['left_eye'][1] - landmarks['right_eye'][1]
-    dX = landmarks['left_eye'][0] - landmarks['right_eye'][0]
-    angle = np.degrees(np.arctan2(dY, dX))
-
-    # Calculate the midpoint between the eyes
-    eye_midpoint = ((landmarks['left_eye'][0] + landmarks['right_eye'][0]) // 2,
-                    (landmarks['left_eye'][1] + landmarks['right_eye'][1]) // 2)
-
-    # Translate the midpoint to the origin, rotate the image, then translate back
-    M = cv2.getRotationMatrix2D(eye_midpoint, angle, 1)
-    face = cv2.warpAffine(face, M, (width, height))
-
-    # Convert the image to grayscale
     image = cv2.cvtColor(face, cv2.COLOR_RGB2GRAY)
     normalized_image = cv2.normalize(image, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
     resized_image = cv2.resize(normalized_image, INPUT_SHAPE[:2])
     reshaped_image = np.reshape(resized_image, INPUT_SHAPE)
+
 
     # plot the image
     plt.imshow(reshaped_image)

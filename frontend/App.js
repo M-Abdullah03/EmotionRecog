@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     // padding: 20,
-    paddingTop: 30,
+    paddingTop: 40,
   },
   logo: {
     // position: 'absolute',

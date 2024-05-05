@@ -14,6 +14,7 @@ import { Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PacmanIndicator } from 'react-native-indicators';
+import uploadImage from '../services/uploadService';
 const Camera = ({ props }) => {
     const { setImageUri } = useContext(ImageContext);
     const [modalVisible, setModalVisible] = useState(false);
@@ -69,82 +70,83 @@ const Camera = ({ props }) => {
 
     const onUpload = async () => {
         setIsLoading(true);
-        let data = new FormData();
-        data.append('file', {
-            uri: selectedImage,
-            type: 'image/jpeg', // or 'image/png' if your image is a png
-            name: 'test.jpg', // you can replace 'test' with the actual file name
-        });
+        const responseJson = await uploadImage(selectedImage);
+        // let data = new FormData();
+        // data.append('file', {
+        //     uri: selectedImage,
+        //     type: 'image/jpeg', // or 'image/png' if your image is a png
+        //     name: 'test.jpg', // you can replace 'test' with the actual file name
+        // });
 
-        try {
-            let response = await fetch('http://10.0.2.2:8000/predict', {
-                method: 'POST',
-                body: data,
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+        // try {
+        //     let response = await fetch('http://10.0.2.2:8000/predict', {
+        //         method: 'POST',
+        //         body: data,
+        //         headers: {
+        //             'Content-Type': 'multipart/form-data',
+        //         },
+        //     });
 
-            let responseJson = await response.json();
-            console.log(responseJson);
+        //     let responseJson = await response.json();
+        //     console.log(responseJson);
 
-            if (response.ok) {
-                console.log('Navigating to the next screen');
+        //     if (response.ok) {
+        //         console.log('Navigating to the next screen');
 
-                // Create a new object with the class probabilities in the desired order
-                let orderedClassProbabilities = {
-                    "surprise": responseJson.class_probabilities.surprise,
-                    "happy": responseJson.class_probabilities.happy,
-                    "neutral": responseJson.class_probabilities.neutral,
-                    "sad": responseJson.class_probabilities.sad,
-                    "angry": responseJson.class_probabilities.angry
-                };
+        //         // Create a new object with the class probabilities in the desired order
+        //         let orderedClassProbabilities = {
+        //             "surprise": responseJson.class_probabilities.surprise,
+        //             "happy": responseJson.class_probabilities.happy,
+        //             "neutral": responseJson.class_probabilities.neutral,
+        //             "sad": responseJson.class_probabilities.sad,
+        //             "angry": responseJson.class_probabilities.angry
+        //         };
 
-                // Replace the class_probabilities in the response with the ordered object
-                responseJson.class_probabilities = orderedClassProbabilities;
-                responseJson.filename = selectedImage;
+        //         // Replace the class_probabilities in the response with the ordered object
+        //         responseJson.class_probabilities = orderedClassProbabilities;
+        //         responseJson.filename = selectedImage;
 
-                try {
-                    let history = await AsyncStorage.getItem('history');
-                    if (history === null) {
-                        history = [];
-                    } else {
-                        history = JSON.parse(history);
-                    }
+        //         try {
+        //             let history = await AsyncStorage.getItem('history');
+        //             if (history === null) {
+        //                 history = [];
+        //             } else {
+        //                 history = JSON.parse(history);
+        //             }
 
-                    history.push(responseJson);
-                    console.log('History:', history);
-                    console.log('Response:', responseJson);
+        //             history.push(responseJson);
+        //             console.log('History:', history);
+        //             console.log('Response:', responseJson);
 
-                    await AsyncStorage.setItem('history', JSON.stringify(history));
-                    console.log('Data saved to local storage');
-                } catch (error) {
-                    console.error('Error saving data to local storage:', error);
-                }
+        //             await AsyncStorage.setItem('history', JSON.stringify(history));
+        //             console.log('Data saved to local storage');
+        //         } catch (error) {
+        //             console.error('Error saving data to local storage:', error);
+        //         }
 
 
-                setModalVisible(false);
+        //         setModalVisible(false);
 
                 navigation.navigate('Statistics', { ...responseJson });
-            } else {
-                setIsLoading(false);
-                console.log('Error:', responseJson.error);
-                Alert.alert(
-                    'Oops!',
-                    responseJson.error,
-                    [
-                        {
-                            text: 'Cancel',
-                            onPress: () => console.log('Cancel Pressed'),
-                            style: 'cancel',
-                        }
-                    ],
-                    { cancelable: false }
-                );
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
+        //     } else {
+        //         setIsLoading(false);
+        //         console.log('Error:', responseJson.error);
+        //         Alert.alert(
+        //             'Oops!',
+        //             responseJson.error,
+        //             [
+        //                 {
+        //                     text: 'Cancel',
+        //                     onPress: () => console.log('Cancel Pressed'),
+        //                     style: 'cancel',
+        //                 }
+        //             ],
+        //             { cancelable: false }
+        //         );
+        //     }
+        // } catch (error) {
+        //     console.error('Error:', error);
+        // }
     };
 
     return (
