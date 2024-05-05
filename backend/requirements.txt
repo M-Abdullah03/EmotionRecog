@@ -1,4 +1,4 @@
 fastapi
 uvicorn
 mtcnn
-pillow
+opencv-python
